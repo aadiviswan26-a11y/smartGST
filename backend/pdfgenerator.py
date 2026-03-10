@@ -66,22 +66,6 @@ def generate_invoice(text, items=None, shop_info=None):
             ('TEXTCOLOR',(0,0),(-1,0),colors.whitesmoke)
         ]))
         content.append(table)
-        content.append(Spacer(1, 0.2*inch))
-        content.append(Paragraph(f"Subtotal: {subtotal}", styles['Normal']))
-        # include gst rate/amount/total if provided in text
-        gst_rate = data.get('gst_rate')
-        gst_amount = data.get('gst_amount')
-        total_text = data.get('total')
-        if gst_rate or gst_amount or total_text:
-            info_lines = []
-            if gst_rate:
-                info_lines.append(f"GST Rate: {gst_rate}")
-            if gst_amount:
-                info_lines.append(f"GST Amount: {gst_amount}")
-            if total_text:
-                info_lines.append(f"Total: {total_text}")
-            content.append(Spacer(1, 0.1*inch))
-            content.append(Paragraph('<br/>'.join(info_lines), styles['Normal']))
     else:
         content.append(Paragraph("No items", styles['Normal']))
 
