@@ -56,12 +56,12 @@ def init_db():
     conn.close()
 
 def get_user_by_email(email):
-    """Get user by email"""
+    """Get user by email (case-insensitive)"""
     db_path = os.path.join(os.path.dirname(__file__), 'database', 'users.db')
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute('SELECT id, email, name, phone, shop_name, shop_address, profile_pic FROM users WHERE email = ?', (email,))
+    c.execute('SELECT id, email, name, phone, shop_name, shop_address, profile_pic FROM users WHERE LOWER(email) = LOWER(?)', (email,))
     user_data = c.fetchone()
 
     conn.close()
@@ -92,6 +92,7 @@ def create_user(email, name, phone, password):
     c = conn.cursor()
 
     password_hash = generate_password_hash(password)
+    email = email.lower()  # Normalize email to lowercase
 
     try:
         c.execute('''
@@ -109,16 +110,23 @@ def create_user(email, name, phone, password):
         return None  # Email already exists
 
 def verify_password(email, password):
-    """Verify user password"""
+    """Verify user password (case-insensitive email)"""
     db_path = os.path.join(os.path.dirname(__file__), 'database', 'users.db')
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute('SELECT id, email, name, phone, shop_name, shop_address, profile_pic, password_hash FROM users WHERE email = ?', (email,))
+    c.execute('SELECT id, email, name, phone, shop_name, shop_address, profile_pic, password_hash FROM users WHERE LOWER(email) = LOWER(?)', (email,))
     user_data = c.fetchone()
 
-    # close connection before checking password to avoid leaving it open
     conn.close()
+
+    # Debug: Print what we found
+    print(f"[DEBUG] Looking for email: {email.lower()}")
+    print(f"[DEBUG] User found: {user_data is not None}")
+    
+    if user_data:
+        print(f"[DEBUG] Password hash exists: {user_data[7] is not None}")
+        print(f"[DEBUG] Password check result: {check_password_hash(user_data[7], password)}")
 
     # user_data layout: id,email,name,phone,shop_name,shop_address,profile_pic,password_hash
     if user_data and user_data[7] and check_password_hash(user_data[7], password):
@@ -151,7 +159,7 @@ def update_user(user_id, name=None, phone=None, email=None, shop_name=None, shop
         params.append(phone)
     if email:
         updates.append('email = ?')
-        params.append(email)
+        params.append(email.lower())  # Normalize email to lowercase
     if shop_name is not None:
         updates.append('shop_name = ?')
         params.append(shop_name)
