@@ -95,14 +95,23 @@ def login():
         return redirect(url_for('home'))
 
     form = LoginForm()
-    if form.validate_on_submit():
-        user = verify_password(form.email.data, form.password.data)
-        if user:
-            login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        print(f"\n[DEBUG LOGIN ROUTE] Email from form: '{email}'")
+        print(f"[DEBUG LOGIN ROUTE] Password from form: '{password}'")
+        
+        if email and password:
+            user = verify_password(email, password)
+            if user:
+                login_user(user)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('home'))
+            else:
+                flash('Invalid email or password', 'error')
         else:
-            flash('Invalid email or password', 'error')
+            flash('Please enter email and password', 'error')
 
     return render_template("login.html", form=form)
 
@@ -112,19 +121,38 @@ def signup():
         return redirect(url_for('home'))
 
     form = SignupForm()
-    if form.validate_on_submit():
-        user = create_user(
-            email=form.email.data,
-            name=form.name.data,
-            phone=form.phone.data,
-            password=form.password.data
-        )
-        if user:
-            login_user(user)
-            flash('Account created successfully!', 'success')
-            return redirect(url_for('home'))
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        name = request.form.get('name', '').strip()
+        phone = request.form.get('phone', '').strip()
+        password = request.form.get('password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
+        
+        print(f"\n[DEBUG SIGNUP] Email: {email}")
+        print(f"[DEBUG SIGNUP] Name: {name}")
+        print(f"[DEBUG SIGNUP] Phone: {phone}")
+        
+        if not email or not name or not phone or not password:
+            flash('Please fill all fields', 'error')
+        elif len(password) < 6:
+            flash('Password must be at least 6 characters', 'error')
+        elif password != confirm_password:
+            flash('Passwords do not match', 'error')
         else:
-            flash('Email already exists', 'error')
+            user = create_user(
+                email=email,
+                name=name,
+                phone=phone,
+                password=password
+            )
+            if user:
+                print(f"[DEBUG SIGNUP] User created successfully: {user.email}")
+                login_user(user)
+                flash('Account created successfully!', 'success')
+                return redirect(url_for('home'))
+            else:
+                print(f"[DEBUG SIGNUP] Failed to create user - email already exists")
+                flash('Email already exists', 'error')
 
     return render_template("signup.html", form=form)
 

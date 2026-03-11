@@ -111,25 +111,41 @@ def create_user(email, name, phone, password):
 
 def verify_password(email, password):
     """Verify user password (case-insensitive email)"""
+    print(f"\n[DEBUG] ===== VERIFY_PASSWORD CALLED =====")
+    print(f"[DEBUG] Input email: '{email}'")
+    print(f"[DEBUG] Input password: '{password}'")
+    
     db_path = os.path.join(os.path.dirname(__file__), 'database', 'users.db')
+    print(f"[DEBUG] Database path: {db_path}")
+    print(f"[DEBUG] Database exists: {os.path.exists(db_path)}")
+    
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
+
+    # First, let's see ALL users in database
+    c.execute('SELECT id, email FROM users')
+    all_users = c.fetchall()
+    print(f"[DEBUG] All users in database: {all_users}")
 
     c.execute('SELECT id, email, name, phone, shop_name, shop_address, profile_pic, password_hash FROM users WHERE LOWER(email) = LOWER(?)', (email,))
     user_data = c.fetchone()
 
     conn.close()
 
-    # Debug: Print what we found
-    print(f"[DEBUG] Looking for email: {email.lower()}")
     print(f"[DEBUG] User found: {user_data is not None}")
     
     if user_data:
-        print(f"[DEBUG] Password hash exists: {user_data[7] is not None}")
-        print(f"[DEBUG] Password check result: {check_password_hash(user_data[7], password)}")
+        print(f"[DEBUG] User ID: {user_data[0]}")
+        print(f"[DEBUG] User email: {user_data[1]}")
+        print(f"[DEBUG] Password hash: {user_data[7][:20]}..." if user_data[7] else "None")
+        password_match = check_password_hash(user_data[7], password)
+        print(f"[DEBUG] Password match: {password_match}")
+    else:
+        print(f"[DEBUG] NO USER FOUND with email: {email.lower()}")
 
     # user_data layout: id,email,name,phone,shop_name,shop_address,profile_pic,password_hash
     if user_data and user_data[7] and check_password_hash(user_data[7], password):
+        print(f"[DEBUG] LOGIN SUCCESS!")
         # construct User object with the proper fields
         return User(
             user_data[0],  # id
@@ -140,6 +156,8 @@ def verify_password(email, password):
             user_data[5],  # shop_address
             user_data[6],  # profile_pic
         )
+    print(f"[DEBUG] LOGIN FAILED!")
+    print(f"[DEBUG] ===== END VERIFY_PASSWORD =====\n")
     return None
 
 def update_user(user_id, name=None, phone=None, email=None, shop_name=None, shop_address=None, profile_pic=None):
@@ -151,13 +169,13 @@ def update_user(user_id, name=None, phone=None, email=None, shop_name=None, shop
     updates = []
     params = []
 
-    if name:
+    if name is not None:
         updates.append('name = ?')
         params.append(name)
-    if phone:
+    if phone is not None:
         updates.append('phone = ?')
         params.append(phone)
-    if email:
+    if email is not None:
         updates.append('email = ?')
         params.append(email.lower())  # Normalize email to lowercase
     if shop_name is not None:
