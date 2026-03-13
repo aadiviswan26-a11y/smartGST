@@ -1,481 +1,352 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Smart GST Calculator</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Smart GST Calculator</title>
 
-  <link rel="stylesheet" href="/static/style.css" />
-  <style>
-    :root{
-      --navy-dark:#0f1e3f;
-      --navy-mid:#213a56;
-      --beige:#cdaa80;
-      --coffee:#997953;
-      --white:#ffffff;
-      --muted:#6b7280;
-      --radius-pill:36px;
-      --radius-card:14px;
-      --shadow:0 10px 30px rgba(15,23,42,0.06);
-    }
+<link rel="stylesheet" href="/static/style.css" />
 
-    html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;background:#333333;color:#ffffff;}
-    .wrap{max-width:980px;margin:28px auto;padding:20px;}
-    .card{background:var(--white);border-radius:var(--radius-card);box-shadow:var(--shadow);padding:22px;color:#111;}
-    .flex-between{display:flex;justify-content:space-between;align-items:center}
-    h1{margin:0 0 6px;font-size:24px;color:#00d4ff}
-    .muted{color:#cccccc;font-size:13px}
+<style>
+:root{
+--navy-dark:#0f1e3f;
+--navy-mid:#213a56;
+--beige:#cdaa80;
+--coffee:#997953;
+--white:#ffffff;
+--muted:#6b7280;
+--radius-pill:36px;
+--radius-card:14px;
+--shadow:0 10px 30px rgba(15,23,42,0.06);
+}
 
-    label{display:block;margin-top:12px;color:#333;font-weight:600}
-    input[type=text], input[type=number], select, textarea{
-      width:100%;padding:12px;border-radius:28px;border:1px solid #e6e6e9;margin-top:6px;font-size:14px;
-      background:#fafafa;
-    }
-    .row{display:flex;gap:10px;margin-top:12px}
-    .row .col{flex:1}
+html,body{
+height:100%;
+margin:0;
+font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+background:#333333;
+color:#ffffff;
+}
 
-    .btn { border:0; padding:10px 20px; border-radius:var(--radius-pill); font-weight:700; cursor:pointer; display:inline-block; }
-    .btn-green{background:var(--navy-mid); color:var(--white)}
-    .btn-orange{background:var(--beige); color:#222}
-    .btn-red{background:var(--coffee); color:var(--white)}
-    .btn-blue{background:var(--navy-dark); color:var(--white)}
+.wrap{
+max-width:980px;
+margin:28px auto;
+padding:20px;
+}
 
-    .btn:active{transform:translateY(1px)}
-    .result{background:#fff;border-radius:12px;padding:16px;margin-top:16px;border:1px solid #f1f1f1;color:#111}
-    #transcript{margin-top:10px;color:#444;font-style:italic}
-    #historyPanel{margin-top:12px;background:#fafafa;padding:10px;border-radius:8px;max-height:260px;overflow:auto;border:1px solid #f1f1f1;color:#222}
-    .hint{font-size:12px;color:#7a7a7a;margin-top:6px}
+.card{
+background:var(--white);
+border-radius:var(--radius-card);
+box-shadow:var(--shadow);
+padding:22px;
+color:#111;
+}
 
-    @media (max-width:760px){ .row{flex-direction:column} .flex-between{flex-direction:column;align-items:flex-start;gap:6px} .btn-group{gap:8px; padding: 0 5px;} }
+.flex-between{
+display:flex;
+justify-content:space-between;
+align-items:center
+}
 
-    .profile-container { position: relative; }
-    .profile-pic { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #00d4ff; }
-    .profile-popup { display: none; position: absolute; top: 50px; right: 0; background: var(--white); border-radius: var(--radius-card); box-shadow: var(--shadow); padding: 10px; min-width: 120px; z-index: 1000; }
-    .profile-popup a { display: block; padding: 8px 12px; color: #111; text-decoration: none; border-radius: 4px; }
-    .profile-popup a:hover { background: #f0f0f0; }
-  </style>
+h1{
+margin:0 0 6px;
+font-size:24px;
+color:#00d4ff
+}
+
+.muted{
+color:#cccccc;
+font-size:13px
+}
+
+label{
+display:block;
+margin-top:12px;
+color:#333;
+font-weight:600
+}
+
+input[type=text],
+input[type=number],
+select,
+textarea{
+width:100%;
+padding:12px;
+border-radius:28px;
+border:1px solid #e6e6e9;
+margin-top:6px;
+font-size:14px;
+background:#fafafa;
+}
+
+.row{
+display:flex;
+gap:10px;
+margin-top:12px
+}
+
+.row .col{
+flex:1
+}
+
+/* ===== DRAMATIC DEEP BLUE BUTTONS ===== */
+
+.btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+position:relative;
+border:none;
+padding:12px 26px;
+border-radius:40px;
+
+font-weight:700;
+font-size:14px;
+letter-spacing:0.5px;
+
+cursor:pointer;
+
+color:white;
+background:linear-gradient(135deg,#0a3d91,#001f54);
+
+transition:all 0.25s ease;
+overflow:hidden;
+
+box-shadow:0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* shine animation */
+
+.btn::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,255,255,0.5),
+transparent
+);
+transition:0.6s;
+}
+
+.btn:hover::before{
+left:100%;
+}
+
+/* hover lift */
+
+.btn:hover{
+transform:translateY(-3px) scale(1.03);
+box-shadow:0 12px 28px rgba(0,0,0,0.35);
+}
+
+.btn:active{
+transform:translateY(1px) scale(0.97);
+}
+
+/* same deep blue for all button types */
+
+.btn-green{background:linear-gradient(135deg,#0a3d91,#001f54);}
+.btn-blue{background:linear-gradient(135deg,#0a3d91,#001f54);}
+.btn-red{background:linear-gradient(135deg,#0a3d91,#001f54);}
+.btn-orange{background:linear-gradient(135deg,#0a3d91,#001f54);}
+
+.btn:active{transform:translateY(1px)}
+
+.result{
+background:#fff;
+border-radius:12px;
+padding:16px;
+margin-top:16px;
+border:1px solid #f1f1f1;
+color:#111
+}
+
+#transcript{
+margin-top:10px;
+color:#444;
+font-style:italic
+}
+
+#historyPanel{
+margin-top:12px;
+background:#fafafa;
+padding:10px;
+border-radius:8px;
+max-height:260px;
+overflow:auto;
+border:1px solid #f1f1f1;
+color:#222
+}
+
+.hint{
+font-size:12px;
+color:#7a7a7a;
+margin-top:6px
+}
+
+@media (max-width:760px){
+.row{flex-direction:column}
+.flex-between{flex-direction:column;align-items:flex-start;gap:6px}
+.btn-group{gap:8px;padding:0 5px;}
+}
+
+.profile-container{
+position:relative;
+}
+
+.profile-pic{
+width:40px;
+height:40px;
+border-radius:50%;
+cursor:pointer;
+object-fit:cover;
+border:2px solid #00d4ff;
+}
+
+.profile-popup{
+display:none;
+position:absolute;
+top:50px;
+right:0;
+background:var(--white);
+border-radius:var(--radius-card);
+box-shadow:var(--shadow);
+padding:10px;
+min-width:120px;
+z-index:1000;
+}
+
+.profile-popup a{
+display:block;
+padding:8px 12px;
+color:#111;
+text-decoration:none;
+border-radius:4px;
+}
+
+.profile-popup a:hover{
+background:#f0f0f0;
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div style="text-align: center;">
-          <h1>Smart GST Calculator</h1>
-          <div class="muted">AI-assisted classification • invoice audit </div>
-        </div>
-        <div class="profile-container">
-          <img src="/static/profile_pics/{{ current_user.profile_pic or 'default.png' }}" alt="Profile" class="profile-pic" onclick="togglePopup()">
-          <div id="profile-popup" class="profile-popup">
-            <a href="/profile">Profile</a>
-            <a href="/logout">Logout</a>
-          </div>
-        </div>
-      </div>
 
-      <div id="itemsContainer">
-        <div class="item-row">
-          <div class="item-field product-field">
-            <label>Product / Service</label>
-            <input type="text" class="product-input" placeholder="e.g. packed basmati rice" autocomplete="off" />
-          </div>
-          <div class="item-field quantity-field">
-            <label>Quantity</label>
-            <input type="number" class="quantity-input" placeholder="1" min="1" value="1" />
-          </div>
-          <div class="item-field price-field">
-            <label>Unit Price (₹)</label>
-            <input type="text" class="price-input" placeholder="250" inputmode="decimal" />
-          </div>
-          <div class="item-field remove-field">
-            <button type="button" class="btn btn-red remove-item-btn" style="display: none;">×</button>
-          </div>
-        </div>
-      </div>
+<div class="wrap">
+<div class="card">
 
-      <div style="margin-top: 15px;">
-        <button type="button" id="addItemBtn" class="btn btn-blue" style="padding: 8px 16px;">+ Add Another Item</button>
-      </div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+<div style="text-align:center;">
+<h1>Smart GST Calculator</h1>
+<div class="muted">AI-assisted classification • invoice audit </div>
+</div>
 
-      <div class="row" style="margin-top:12px">
-        <div class="col">
-          <label for="gstTypeSelect">GST Type</label>
-          <select id="gstTypeSelect">
-            <option value="exclusive">exclusive (add GST)</option>
-            <option value="inclusive">inclusive (price includes GST)</option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="gstCategorySelect">GST Mode</label>
-          <select id="gstCategorySelect">
-            <option value="cgst_sgst">CGST + SGST (intra-state)</option>
-            <option value="igst">IGST (inter-state)</option>
-          </select>
-        </div>
-      </div>
+<div class="profile-container">
+<img src="/static/profile_pics/{{ current_user.profile_pic or 'default.png' }}" alt="Profile" class="profile-pic" onclick="togglePopup()">
+<div id="profile-popup" class="profile-popup">
+<a href="/profile">Profile</a>
+<a href="/logout">Logout</a>
+</div>
+</div>
+</div>
 
-      <div class="btn-group" aria-label="primary actions">
-        <button id="calcBtn" class="btn btn-green">Calculate</button>
-        <button id="clearBtn" class="btn btn-red">Clear</button>
-        <button id="historyBtn" class="btn btn-blue">History</button>
-      </div>
+<div id="itemsContainer">
+<div class="item-row">
+<div class="item-field product-field">
+<label>Product / Service</label>
+<input type="text" class="product-input" placeholder="e.g. packed basmati rice" autocomplete="off" />
+</div>
 
-      <div class="btn-group" style="margin-top:12px">
-        <button id="invoiceBtn" class="btn btn-blue">Download Invoice (PDF)</button>
-      </div>
+<div class="item-field quantity-field">
+<label>Quantity</label>
+<input type="number" class="quantity-input" placeholder="1" min="1" value="1" />
+</div>
 
-      <label for="billedInput" style="margin-top:14px">Billed Amount from Shop (₹)</label>
-      <div style="display: flex; gap: 10px; align-items: center; margin-top: 6px;">
-        <input id="billedInput" type="number" step="0.01" placeholder="Enter billed total from invoice" style="flex: 1;" />
-        <button id="checkFraudBtn" class="btn btn-blue" style="padding: 8px 12px; font-size: 13px; min-width: auto;">Check Fraud</button>
-      </div>
+<div class="item-field price-field">
+<label>Unit Price (₹)</label>
+<input type="text" class="price-input" placeholder="250" inputmode="decimal" />
+</div>
 
-      <div id="resultBox" class="result" aria-live="polite">
-        <p><strong>GST Rate:</strong> —</p>
-        <p><strong>GST Amount:</strong> —</p>
-        <p><strong>Total:</strong> —</p>
-        <p><strong>Category:</strong> —</p>
-      </div>
+<div class="item-field remove-field">
+<button type="button" class="btn btn-red remove-item-btn" style="display: none;">×</button>
+</div>
+</div>
+</div>
 
-      <div id="transcript" class="hint"></div>
+<div style="margin-top: 15px;">
+<button type="button" id="addItemBtn" class="btn btn-blue">+ Add Another Item</button>
+</div>
 
-      <h3 style="margin-top:18px;color:#222">Billing History</h3>
-      <div id="historyPanel"><small>No history loaded yet — click History.</small></div>
-    </div>
-  </div>
+<div class="row" style="margin-top:12px">
+<div class="col">
+<label for="gstTypeSelect">GST Type</label>
+<select id="gstTypeSelect">
+<option value="exclusive">exclusive (add GST)</option>
+<option value="inclusive">inclusive (price includes GST)</option>
+</select>
+</div>
+
+<div class="col">
+<label for="gstCategorySelect">GST Mode</label>
+<select id="gstCategorySelect">
+<option value="cgst_sgst">CGST + SGST (intra-state)</option>
+<option value="igst">IGST (inter-state)</option>
+</select>
+</div>
+</div>
+
+<div class="btn-group" aria-label="primary actions">
+<button id="calcBtn" class="btn btn-green">Calculate</button>
+<button id="clearBtn" class="btn btn-red">Clear</button>
+<button id="historyBtn" class="btn btn-blue">History</button>
+</div>
+
+<div class="btn-group" style="margin-top:12px">
+<button id="invoiceBtn" class="btn btn-blue">Download Invoice (PDF)</button>
+</div>
+
+<label for="billedInput" style="margin-top:14px">Billed Amount from Shop (₹)</label>
+
+<div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
+<input id="billedInput" type="number" step="0.01" placeholder="Enter billed total from invoice" style="flex:1;" />
+<button id="checkFraudBtn" class="btn btn-blue">Check Fraud</button>
+</div>
+
+<div id="resultBox" class="result" aria-live="polite">
+<p><strong>GST Rate:</strong> —</p>
+<p><strong>GST Amount:</strong> —</p>
+<p><strong>Total:</strong> —</p>
+<p><strong>Category:</strong> —</p>
+</div>
+
+<div id="transcript" class="hint"></div>
+
+<h3 style="margin-top:18px;color:#222">Billing History</h3>
+<div id="historyPanel"><small>No history loaded yet — click History.</small></div>
+
+</div>
+</div>
 
 <script>
-/* ===== helpers ===== */
-function handleFetchError(respText, status){
-  try { const j = JSON.parse(respText); return j.error || respText || `HTTP ${status}`; }
-  catch(e){ return respText || `HTTP ${status}`; }
-}
-async function postJsonAndParse(path, body){
-  const resp = await fetch(path, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  const text = await resp.text();
-  if (!resp.ok) { throw new Error(handleFetchError(text, resp.status)); }
-  try { return JSON.parse(text); } catch(e){ return text; }
+function togglePopup(){
+const popup=document.getElementById('profile-popup');
+popup.style.display=popup.style.display==='block'?'none':'block';
 }
 
-/* ===== state & elements ===== */
-window.smartGST = { lastFinal:null, lastCalcResponse:null, items: [] };
-
-const gstTypeSelect = document.getElementById('gstTypeSelect');
-const gstCategorySelect = document.getElementById('gstCategorySelect');
-const itemsContainer = document.getElementById('itemsContainer');
-const addItemBtn = document.getElementById('addItemBtn');
-
-const calcBtn = document.getElementById('calcBtn');
-const clearBtn = document.getElementById('clearBtn');
-const historyBtn = document.getElementById('historyBtn');
-const invoiceBtn = document.getElementById('invoiceBtn');
-const checkFraudBtn = document.getElementById('checkFraudBtn');
-
-const billedInput = document.getElementById('billedInput');
-const resultBox = document.getElementById('resultBox');
-const transcript = document.getElementById('transcript');
-const historyPanel = document.getElementById('historyPanel');
-
-// Initialize with one item
-updateRemoveButtons();
-
-function createItemRow() {
-  const itemRow = document.createElement('div');
-  itemRow.className = 'item-row';
-
-  itemRow.innerHTML = `
-    <div class="item-field product-field">
-      <label>Product / Service</label>
-      <input type="text" class="product-input" placeholder="e.g. packed basmati rice" autocomplete="off" />
-    </div>
-    <div class="item-field quantity-field">
-      <label>Quantity</label>
-      <input type="number" class="quantity-input" placeholder="1" min="1" value="1" />
-    </div>
-    <div class="item-field price-field">
-      <label>Unit Price (₹)</label>
-      <input type="text" class="price-input" placeholder="250" inputmode="decimal" />
-    </div>
-    <div class="item-field remove-field">
-      <button type="button" class="btn btn-red remove-item-btn">×</button>
-    </div>
-  `;
-
-  // Add event listener for remove button
-  const removeBtn = itemRow.querySelector('.remove-item-btn');
-  removeBtn.addEventListener('click', () => {
-    itemRow.remove();
-    updateRemoveButtons();
-  });
-
-  return itemRow;
+document.addEventListener('click',function(event){
+const container=document.querySelector('.profile-container');
+const popup=document.getElementById('profile-popup');
+if(!container.contains(event.target)){
+popup.style.display='none';
 }
-
-function updateRemoveButtons() {
-  const itemRows = document.querySelectorAll('.item-row');
-  const removeButtons = document.querySelectorAll('.remove-item-btn');
-
-  // Show remove buttons only if there are more than 1 items
-  removeButtons.forEach(btn => {
-    btn.style.display = itemRows.length > 1 ? 'block' : 'none';
-  });
-}
-
-addItemBtn.addEventListener('click', () => {
-  const newItemRow = createItemRow();
-  itemsContainer.appendChild(newItemRow);
-  updateRemoveButtons();
-});
-
-// Add enter key support for inputs
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    const activeElement = document.activeElement;
-    if (activeElement.classList.contains('product-input') ||
-        activeElement.classList.contains('price-input') ||
-        activeElement.classList.contains('quantity-input')) {
-      calcBtn.click();
-    }
-  }
-});
-
-function parseFlexibleNumber(str){
-  if (str===null||str===undefined) return NaN;
-  let s = String(str).trim();
-  s = s.replace(/[,\u00A0]/g,'');
-  const n = parseFloat(s);
-  return n;
-}
-
-/* ===== Calculate ===== */
-calcBtn.addEventListener('click', async () => {
-  const itemRows = document.querySelectorAll('.item-row');
-  const items = [];
-
-  for (const row of itemRows) {
-    const product = row.querySelector('.product-input').value.trim();
-    const quantity = parseInt(row.querySelector('.quantity-input').value) || 1;
-    const priceRaw = row.querySelector('.price-input').value.trim();
-
-    if (!product || !priceRaw) {
-      return alert('Please fill in all product names and prices');
-    }
-
-    const unitPrice = parseFlexibleNumber(priceRaw);
-    if (Number.isNaN(unitPrice) || unitPrice <= 0) {
-      return alert('Enter valid numeric prices for all items');
-    }
-
-    items.push({
-      product,
-      quantity,
-      unit_price: unitPrice,
-      total_price: unitPrice * quantity
-    });
-  }
-
-  if (items.length === 0) {
-    return alert('Please add at least one item');
-  }
-
-  resultBox.innerHTML = 'Calculating...';
-  try {
-    const data = await postJsonAndParse('/calculate', {
-      items,
-      gst_type: gstTypeSelect?.value || 'exclusive',
-      gst_category: gstCategorySelect?.value || 'cgst_sgst'
-    });
-    if (data.error) throw new Error(data.error);
-
-    window.smartGST.lastFinal = data.total;
-    window.smartGST.lastCalcResponse = data;
-    window.smartGST.items = items;
-
-    // Display results with item breakdown
-    let itemsHtml = '<div style="margin-bottom: 10px;"><strong>Items:</strong></div>';
-    data.items.forEach((item, index) => {
-      itemsHtml += `
-        <div style="margin-left: 10px; font-size: 14px; color: #666;">
-          ${item.quantity}x ${item.product} @ ₹${item.unit_price} = ₹${item.total}
-        </div>
-      `;
-    });
-
-    resultBox.innerHTML = `
-      ${itemsHtml}
-      <hr style="margin: 10px 0; border: none; border-top: 1px solid #eee;">
-      <p><strong>Subtotal:</strong> ₹${Number(data.subtotal).toFixed(2)}</p>
-      <p><strong>GST Rate:</strong> ${data.rate}%</p>
-      <p><strong>GST Amount:</strong> ₹${Number(data.gst).toFixed(2)}</p>
-      <p><strong>Total:</strong> ₹${Number(data.total).toFixed(2)}</p>
-      <p><strong>Category:</strong> ${data.category}</p>
-      <p class="hint">Tip: Use HSN + description for better accuracy.</p>
-    `;
-  } catch (err) {
-    resultBox.innerHTML = '';
-    alert('Calculation error: ' + err.message);
-    console.error(err);
-  }
-});
-
-/* ===== Check Fraud ===== */
-checkFraudBtn.addEventListener('click', async () => {
-  if (!window.smartGST.lastFinal) return alert('Calculate first to get final amount');
-  const billedRaw = billedInput.value;
-  if (billedRaw === '' || billedRaw === null || billedRaw === undefined) return alert('Enter billed amount from shop');
-  const billed = parseFloat(billedRaw);
-  if (Number.isNaN(billed)) return alert('Enter valid billed amount');
-
-  try {
-    const data = await postJsonAndParse('/api/check_fraud', { final: window.smartGST.lastFinal, billed });
-    alert(data.result || JSON.stringify(data));
-  } catch (err) {
-    alert('Fraud check error: ' + err.message);
-    console.error(err);
-  }
-});
-
-/* ===== Download PDF ===== */
-invoiceBtn.addEventListener('click', async () => {
-  if (!window.smartGST.lastCalcResponse) return alert('Calculate first to generate invoice');
-
-  const r = window.smartGST.lastCalcResponse;
-  const items = window.smartGST.items;
-
-  // Create detailed text for PDF
-  let text = `Invoice Details\n\n`;
-  text += `Items:\n`;
-  items.forEach((item, index) => {
-    text += `${item.quantity}x ${item.product} @ ₹${item.unit_price} = ₹${item.total_price}\n`;
-  });
-  text += `\nSubtotal: ₹${r.subtotal}\n`;
-  text += `GST Rate: ${r.rate}%\n`;
-  text += `GST Amount: ₹${r.gst}\n`;
-  text += `Total: ₹${r.total}\n`;
-  text += `Category: ${r.category}`;
-
-  try {
-    const resp = await fetch('/api/generate_invoice', {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text, items})
-    });
-    if (!resp.ok) { const txt = await resp.text(); throw new Error(handleFetchError(txt, resp.status)); }
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'invoice.pdf'; document.body.appendChild(a);
-    a.click(); a.remove(); URL.revokeObjectURL(url);
-  } catch (err) {
-    alert('PDF error: ' + err.message);
-    console.error(err);
-  }
-});
-
-/* ===== Clear ===== */
-clearBtn.addEventListener('click', () => {
-  productInput.value = ''; priceInput.value = ''; billedInput.value = '';
-  transcript.textContent = ''; window.smartGST.lastFinal = null; window.smartGST.lastCalcResponse = null;
-  resultBox.innerHTML = `<p><strong>GST Rate:</strong> —</p><p><strong>GST Amount:</strong> —</p><p><strong>Total:</strong> —</p><p><strong>Category:</strong> —</p>`;
-});
-
-/* ===== History ===== */
-historyBtn.addEventListener('click', async () => {
-  try {
-    const resp = await fetch('/history');
-    console.log('/history status', resp.status);
-    const rows = await resp.json();
-    console.log('history rows', rows);
-    if (!Array.isArray(rows) || rows.length === 0) {
-      historyPanel.innerHTML = '<small>No history available.</small>'; return;
-    }
-    historyPanel.innerHTML = rows.slice(-50).reverse().map(r => {
-      return `<div style="padding:8px;border-bottom:1px solid #f1f1f1"><strong>${r[0]}</strong><div class="muted">${r[1]} — ₹${r[2]} — GST ${r[3]}% — Total ₹${r[5]}</div></div>`;
-    }).join('');
-  } catch (err) {
-    console.error('History fetch error', err);
-    alert('History error: ' + err.message);
-  }
-});
-
-/* ===== Voice (robust parsing) ===== */
-/* kept from your robust version (words->numbers, units support) */
-function wordsToSmallNumber(txt) {
-  const ones = {zero:0, one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9,
-                ten:10, eleven:11, twelve:12, thirteen:13, fourteen:14, fifteen:15,
-                sixteen:16, seventeen:17, eighteen:18, nineteen:19};
-  const tens = {twenty:20, thirty:30, forty:40, fifty:50, sixty:60, seventy:70, eighty:80, ninety:90};
-  let words = txt.toLowerCase().trim().replace(/[^a-z\s-]/g,' ').replace(/\s+/g,' ').split(' ');
-  let total = 0; let i=0;
-  while(i<words.length){
-    let w = words[i];
-    if(ones.hasOwnProperty(w)){ total+=ones[w]; i++; continue; }
-    if(tens.hasOwnProperty(w)){ let val=tens[w]; let next=words[i+1]; if(next && ones.hasOwnProperty(next)){ val+=ones[next]; i+=2 } else i++; total+=val; continue; }
-    if(w==='and'){ i++; continue; } break;
-  }
-  return total || NaN;
-}
-function applyUnitMultiplier(num, unit){
-  if(num===null||num===undefined) return null;
-  const n = parseFloat(String(num).replace(/[,\s]/g,'')); if(isNaN(n)) return null;
-  unit = (unit||'').toLowerCase();
-  if(/^(k|thousand)s?$/i.test(unit)) return n*1e3;
-  if(/^(lakh|lakhs|lacs|lac|laks?)$/i.test(unit)) return n*1e5;
-  if(/^(crore|crores)$/i.test(unit)) return n*1e7;
-  return n;
-}
-function normalizeSpoken(text){ return String(text||'').replace(/[,\u00A0]/g,' ').replace(/[^\w\s.\-]/g,' ').replace(/\s+/g,' ').trim(); }
-function parseSpokenPriceFromText(text){
-  const norm = normalizeSpoken(text);
-  const numUnitRegex = /(\d{1,3}(?:[,\s]\d{2,3})*(?:\.\d+)?|\d+(?:\.\d+)?)(?:\s*(k|thousand|lakh|lakhs|lacs|lac|laks|crore|crores))?\b/i;
-  let m = norm.match(numUnitRegex);
-  if(m){ const foundRaw=m[1], foundUnit=m[2]||''; const cleaned=foundRaw.replace(/[,\s]/g,''); const price=applyUnitMultiplier(cleaned,foundUnit); const productText=norm.replace(m[0],'').replace(/\s+/g,' ').trim(); if(price!==null) return {price, productText}; }
-  const wordUnitRegex = /((?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|and|\s|-)+)\s+(k|thousand|lakh|lakhs|lacs|lac|laks|crore|crores)\b/i;
-  m = norm.match(wordUnitRegex);
-  if(m){ const wordNum=m[1], unit=m[2]; const small=wordsToSmallNumber(wordNum); if(!isNaN(small)){ const price=applyUnitMultiplier(small,unit); const productText=norm.replace(m[0],'').replace(/\s+/g,' ').trim(); if(price!==null) return {price, productText}; } }
-  const anyDigits = norm.match(/([0-9][0-9,\s]*[0-9]|[0-9]+)/);
-  if(anyDigits){ const cleaned=anyDigits[0].replace(/[,\s]/g,''); const n=parseFloat(cleaned); if(!Number.isNaN(n)){ const productText=norm.replace(anyDigits[0],'').replace(/\s+/g,' ').trim(); return {price:n, productText}; } }
-  return { price:null, productText:norm };
-}
-
-voiceBtn.addEventListener('click', () => {
-  transcript.textContent = 'Listening… (allow microphone permission if prompted)';
-  if(!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)){ transcript.textContent='Speech recognition not available in this browser. Use Chrome/Edge.'; return; }
-  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recog = new Recognition();
-  recog.lang = 'en-IN'; recog.interimResults=false; recog.maxAlternatives=1;
-
-  recog.onresult = (ev) => {
-    try {
-      let text = (ev.results[0][0].transcript || '').trim();
-      transcript.textContent = `Heard: "${text}"`;
-      if(!text) return;
-      const parsed = parseSpokenPriceFromText(text);
-      const price = parsed.price; const prod = parsed.productText;
-      if(price === 0) {
-        productInput.value = prod || normalizeSpoken(text);
-        transcript.textContent += ' — no numeric price detected (0). Try: "product 250" or "product 20 lakh".';
-        return;
-      }
-      if(price !== null && !Number.isNaN(price)) { priceInput.value = String(price); productInput.value = prod || ''; }
-      else { productInput.value = normalizeSpoken(text); transcript.textContent += ' — no numeric price detected. Please enter price or say "product 250".'; }
-    } catch (err) { console.error('voice result parse error', err); transcript.textContent = 'Voice parse error: ' + (err.message || err); }
-  };
-
-  recog.onerror = (ev) => { transcript.textContent = 'Voice error: ' + (ev.error || ev.message || 'unknown'); };
-  try { recog.start(); } catch(e){ transcript.textContent = 'Voice start error: ' + e.message; console.warn(e); }
-});
-
-function togglePopup() {
-  const popup = document.getElementById('profile-popup');
-  popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-}
-
-// Close popup when clicking outside
-document.addEventListener('click', function(event) {
-  const container = document.querySelector('.profile-container');
-  const popup = document.getElementById('profile-popup');
-  if (!container.contains(event.target)) {
-    popup.style.display = 'none';
-  }
 });
 </script>
+
 </body>
 </html>
